@@ -1,13 +1,15 @@
 import HP
 import pickle
 import os
-from gutenberg_book import *
-from paragraph import *
+from typing import Dict, List, Optional
+from gutenberg_book import GutenbergBook, create_gutenberg_books
+from paragraph import create_paragraphs
 
 
-def get_books(books_list=None, books_features=None, book_object=True):
+def get_books(books_list: Optional[List] = None,
+              books_features: Optional[Dict] = None,
+              book_object: bool = True) -> Dict:
     """
-
     Args:
         books_list: (Optional) list of books gutenberg ID to create books. if it is None then it will return all books.
         books_features: (Optional) features to get books with that feature. a dictionary which values are set or list.
@@ -43,7 +45,7 @@ def get_books(books_list=None, books_features=None, book_object=True):
     return books_metadata
 
 
-def get_bookshelves(bookshelves_list=None):
+def get_bookshelves(bookshelves_list: Optional[List] = None) -> Dict:
     """
 
     Args:
@@ -69,12 +71,12 @@ def get_bookshelves(bookshelves_list=None):
     return bookshelves
 
 
-def get_paragraphs(paragraph_id=None,
-                   books=None,
-                   tags=None,
-                   num_sequential=1,
-                   paragraph_object=True,
-                   lowercase=False):
+def get_paragraphs(paragraph_id: Optional[List[int]] = None,
+                   books: Optional[List] = None,
+                   tags: Optional[List] = None,
+                   num_sequential: int = 1,
+                   paragraph_object: bool = True,
+                   lowercase: bool = False) -> List:
     """
 
     Get paragraphs from args.
