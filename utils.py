@@ -1,9 +1,14 @@
 from gutenberg_API.API import get_paragraphs
 from random import shuffle
 import csv
+from typing import List, Optional, Tuple
 
 
-def filter(paragraphs, max_len=512, min_len=10, max_sent=60, min_sent=3):
+def filter(paragraphs: List[Tuple],
+           max_len: int = 512,
+           min_len: int = 10,
+           max_sent: int = 60,
+           min_sent: int = 3) -> List[Tuple]:
     """
     desc: removes tuples with at least one paragraph not satisfying following conditions:
           1. min_len <= words in the paragraph <= max_len
@@ -23,26 +28,26 @@ def filter(paragraphs, max_len=512, min_len=10, max_sent=60, min_sent=3):
     for tuple in paragraphs:
         flag = False
         for seq in tuple:
-            l = len(seq.text(format="words"))
-            ls = len(seq.text(format="sentences"))
-            if l > max_len or l < min_len or ls > max_sent or ls < min_sent:
+            world_len = len(seq.text(format="words"))
+            sen_len = len(seq.text(format="sentences"))
+            if world_len > max_len or world_len < min_len or sen_len > max_sent or sen_len < min_sent:
                 flag = True
 
-        if flag == False:
+        if not flag:
             ret.append(tuple)
 
     return ret
 
 
-def get_paragraph_words(max_len=512,
-                        min_len=10,
-                        max_sent=60,
-                        min_sent=3,
-                        paragraph_id=None,
-                        books=None,
-                        tags=None,
-                        num_sequential=2,
-                        shuffle=True):
+def get_paragraph_words(max_len: int = 512,
+                        min_len: int = 10,
+                        max_sent: int = 60,
+                        min_sent: int = 3,
+                        paragraph_id: Optional[List] = None,
+                        books: Optional[List] = None,
+                        tags: Optional[List] = None,
+                        num_sequential: int = 2,
+                        shuffle: bool = True) -> List[List]:
     """
     :param max_len: (Optional) integer. maximum number of words in a paragraph
     :param min_len: (Optional) integer. minimum number of words in a paragraph
@@ -77,9 +82,10 @@ def get_paragraph_words(max_len=512,
     return ret
 
 
-def make_transposition_pair_dataset(paragraphs,
-                                    num_tokens=None,
-                                    validation_split=0.1):
+def make_transposition_pair_dataset(
+        paragraphs: list[Tuple],
+        num_tokens: Optional[int] = None,
+        validation_split: float = 0.1) -> Tuple[List]:
     """
     desc: makes dataset of paragraphs in which each example is a list of :
             [label, first paragraph ID, second paragraph ID, first paragraph text, second paragraph text]
@@ -109,7 +115,7 @@ def make_transposition_pair_dataset(paragraphs,
     # paragraph IDs could also be their IDs in gutenberg API
 
     for i, (x, y) in enumerate(paragraphs):
-        if (num_tokens != None):
+        if (num_tokens is not None):
             all_pairs.append([
                 "1",
                 str(i),
@@ -141,7 +147,7 @@ def make_transposition_pair_dataset(paragraphs,
     return train_data, validation_data
 
 
-def write_tsv(data, data_path):
+def write_tsv(data, data_path: str):
     with open(data_path, 'w', newline='', encoding='utf-8') as tsvfile:
         writer = csv.writer(tsvfile, delimiter='\t')
         for example in data:
