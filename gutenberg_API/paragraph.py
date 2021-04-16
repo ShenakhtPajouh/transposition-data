@@ -2,7 +2,14 @@ from collections import defaultdict
 
 
 class Paragraph(object):
-    def __init__(self, text, id=None, book_id=None, next_id=None, prev_id=None, tags=set()):
+
+    def __init__(self,
+                 text,
+                 id=None,
+                 book_id=None,
+                 next_id=None,
+                 prev_id=None,
+                 tags=set()):
         if id is not None:
             assert isinstance(id, int)
             assert id > 0
@@ -18,7 +25,8 @@ class Paragraph(object):
         assert isinstance(tags, set)
         assert isinstance(text, list)
         assert all([isinstance(sent, list) for sent in text])
-        assert all([all([isinstance(word, str) for word in sent]) for sent in text])
+        assert all(
+            [all([isinstance(word, str) for word in sent]) for sent in text])
         self._id = id
         self._text = text
         self._book_id = book_id
@@ -71,7 +79,8 @@ class Paragraph(object):
 
     @property
     def metadata(self):
-        return paragraph_metadata(self.id, self.book_id, self.prev_id, self.next_id, self.tags)
+        return paragraph_metadata(self.id, self.book_id, self.prev_id,
+                                  self.next_id, self.tags)
 
     def text(self, format="sentences", lowercase=False):
         """
@@ -107,25 +116,34 @@ class Paragraph(object):
             else:
                 return text
         else:
-            raise ValueError('format should be one of ["sentences", "words", "text"]')
+            raise ValueError(
+                'format should be one of ["sentences", "words", "text"]')
 
 
 def create_paragraphs(paragraph_metadata, paragraph_text):
     assert set(paragraph_metadata) == set(paragraph_text)
     pars = []
     for i, met in paragraph_metadata.items():
-        mt = defaultdict(lambda : None, met)
+        mt = defaultdict(lambda: None, met)
         if "tags" not in met:
             tags = dict()
         else:
             tags = met["tags"]
-        par = Paragraph(text=paragraph_text[i], id=mt["id"], book_id=mt["book_id"], next_id=mt["next_id"],
-                        prev_id=mt["prev_id"], tags=tags)
+        par = Paragraph(text=paragraph_text[i],
+                        id=mt["id"],
+                        book_id=mt["book_id"],
+                        next_id=mt["next_id"],
+                        prev_id=mt["prev_id"],
+                        tags=tags)
         pars.append((i, par))
     return dict(pars)
 
 
-def paragraph_metadata(id=None, book_id=None, prev_id=None, next_id=None, tags=None):
+def paragraph_metadata(id=None,
+                       book_id=None,
+                       prev_id=None,
+                       next_id=None,
+                       tags=None):
     """
 
     A helper for creating metadata
@@ -178,6 +196,3 @@ def paragraph_metadata(id=None, book_id=None, prev_id=None, next_id=None, tags=N
             res[name] = set(x)
 
     return res
-
-
-

@@ -14,4 +14,3 @@ class Tags:
     WITHOUT_DIALOGUE = 5
     TOO_LONG = 7
     PARAGRAPH = 8
-

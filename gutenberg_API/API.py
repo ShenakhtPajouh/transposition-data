@@ -17,7 +17,8 @@ def get_books(books_list=None, books_features=None, book_object=True):
          a dictionary of books objects {id: GutenbergBook(id)/metadata(id)}
     """
     if books_list is not None and books_features is not None:
-        raise AttributeError("only one of books_list and books_features should be identified")
+        raise AttributeError(
+            "only one of books_list and books_features should be identified")
     if os.path.isfile(HP.BOOKS_DATA_PATH):
         pk = open(HP.BOOKS_DATA_PATH, "rb")
         books_metadata = pickle.load(pk)
@@ -32,8 +33,11 @@ def get_books(books_list=None, books_features=None, book_object=True):
         books_metadata = {id: books_metadata[id] for id in books_list}
     if books_features is not None:
         for feature, items in books_features.items():
-            books_metadata = {id: metadata for id, metadata in books_metadata.items()
-                              if items.issubset(metadata[feature])}
+            books_metadata = {
+                id: metadata
+                for id, metadata in books_metadata.items()
+                if items.issubset(metadata[feature])
+            }
     if book_object:
         return create_gutenberg_books(books_metadata, dic=True)
     return books_metadata
@@ -56,13 +60,21 @@ def get_bookshelves(bookshelves_list=None):
         assert isinstance(bookshelves, dict)
         if bookshelves_list is not None:
             bookshelves_list = bookshelves_list & set(bookshelves)
-            bookshelves = {bookshelf: bookshelves[bookshelf] for bookshelf in bookshelves_list}
+            bookshelves = {
+                bookshelf: bookshelves[bookshelf]
+                for bookshelf in bookshelves_list
+            }
     else:
         bookshelves = dict()
     return bookshelves
 
 
-def get_paragraphs(paragraph_id=None, books=None, tags=None, num_sequential=1, paragraph_object=True, lowercase=False):
+def get_paragraphs(paragraph_id=None,
+                   books=None,
+                   tags=None,
+                   num_sequential=1,
+                   paragraph_object=True,
+                   lowercase=False):
     """
 
     Get paragraphs from args.
@@ -82,7 +94,8 @@ def get_paragraphs(paragraph_id=None, books=None, tags=None, num_sequential=1, p
 
     """
     if paragraph_id is not None and (books is not None or tags is not None):
-        raise ValueError("if paragraph_id is given, books and tags can't be accepted.")
+        raise ValueError(
+            "if paragraph_id is given, books and tags can't be accepted.")
     with open(HP.PARAGRAPH_METADATA_PATH, "rb") as pkl:
         met_data = pickle.load(pkl)
     with open(HP.PARAGRAPH_DATA_PATH, "rb") as pkl:
@@ -91,11 +104,18 @@ def get_paragraphs(paragraph_id=None, books=None, tags=None, num_sequential=1, p
     if paragraph_id is not None:
         pars = {i: par for i, par in pars.items() if par.id in paragraph_id}
     if books is not None:
-        books = {i for i in books if isinstance(i, int)} | {book.id for book in books if isinstance(book, GutenbergBook)}
+        books = {i for i in books if isinstance(i, int)} | {
+            book.id for book in books if isinstance(book, GutenbergBook)
+        }
         pars = {i: par for i, par in pars.items() if par.book_id in books}
     if tags is not None:
-        tags = [{tag} for tag in tags if isinstance(tag, int)] + [set(tag) for tag in tags if not isinstance(tag, int)]
-        pars = {i: par for i, par in pars.items() if all([not par.tags.isdisjoint(tag) for tag in tags])}
+        tags = [{tag} for tag in tags if isinstance(tag, int)
+               ] + [set(tag) for tag in tags if not isinstance(tag, int)]
+        pars = {
+            i: par
+            for i, par in pars.items()
+            if all([not par.tags.isdisjoint(tag) for tag in tags])
+        }
 
     if num_sequential == 1:
         if paragraph_object:
@@ -121,7 +141,10 @@ def get_paragraphs(paragraph_id=None, books=None, tags=None, num_sequential=1, p
         if paragraph_object:
             return pars2
         else:
-            return [tuple(par.text(lowercase=lowercase) for par in pt) for pt in pars2]
+            return [
+                tuple(par.text(lowercase=lowercase)
+                      for par in pt)
+                for pt in pars2
+            ]
     else:
         raise ValueError("num_sequential most be positive")
-

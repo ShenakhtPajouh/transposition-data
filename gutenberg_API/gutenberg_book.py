@@ -1,4 +1,5 @@
 class GutenbergBook(object):
+
     def __init__(self, id, metadata):
         """
 
@@ -41,7 +42,8 @@ class GutenbergBook(object):
 
     @property
     def metadata(self):
-        return book_metadata(self.id, self.title, self.authors, self.language, self.bookshelves)
+        return book_metadata(self.id, self.title, self.authors, self.language,
+                             self.bookshelves)
 
     def add_bookshelf(self, shelf):
         if not isinstance(shelf, str):
@@ -70,7 +72,11 @@ def create_gutenberg_books(inputs, dic=False):
         return set(res.values())
 
 
-def book_metadata(id=None ,title=None, authors=None, language=None, bookshelves=None):
+def book_metadata(id=None,
+                  title=None,
+                  authors=None,
+                  language=None,
+                  bookshelves=None):
     """
 
     A helper for creating metadata
@@ -134,9 +140,3 @@ def book_metadata(id=None ,title=None, authors=None, language=None, bookshelves=
             assert all([isinstance(s, str) for s in x])
             res[name] = set(x)
     return res
-
-
-
-
-
-

@@ -2,7 +2,8 @@ from gutenberg_API.API import get_paragraphs
 from random import shuffle
 import csv
 
-def filter (paragraphs , max_len=512 , min_len=10 , max_sent=60 ,min_sent=3):
+
+def filter(paragraphs, max_len=512, min_len=10, max_sent=60, min_sent=3):
     """
     desc: removes tuples with at least one paragraph not satisfying following conditions:
           1. min_len <= words in the paragraph <= max_len
@@ -20,21 +21,28 @@ def filter (paragraphs , max_len=512 , min_len=10 , max_sent=60 ,min_sent=3):
     ret = []
 
     for tuple in paragraphs:
-        flag=False
+        flag = False
         for seq in tuple:
             l = len(seq.text(format="words"))
             ls = len(seq.text(format="sentences"))
-            if l>max_len or l<min_len or ls>max_sent or ls<min_sent:
+            if l > max_len or l < min_len or ls > max_sent or ls < min_sent:
                 flag = True
 
-        if flag==False:
+        if flag == False:
             ret.append(tuple)
 
     return ret
 
 
-def get_paragraph_words(max_len=512 , min_len=10 , max_sent=60 , min_sent=3 , paragraph_id=None,
-                        books=None, tags=None, num_sequential=2, shuffle=True):
+def get_paragraph_words(max_len=512,
+                        min_len=10,
+                        max_sent=60,
+                        min_sent=3,
+                        paragraph_id=None,
+                        books=None,
+                        tags=None,
+                        num_sequential=2,
+                        shuffle=True):
     """
     :param max_len: (Optional) integer. maximum number of words in a paragraph
     :param min_len: (Optional) integer. minimum number of words in a paragraph
@@ -52,10 +60,12 @@ def get_paragraph_words(max_len=512 , min_len=10 , max_sent=60 , min_sent=3 , pa
              each paragraph is a list of words
     """
 
-    paragraphs = get_paragraphs(paragraph_id=paragraph_id, books=books,
-                                tags=tags, num_sequential=num_sequential)
+    paragraphs = get_paragraphs(paragraph_id=paragraph_id,
+                                books=books,
+                                tags=tags,
+                                num_sequential=num_sequential)
 
-    paragraphs = filter(paragraphs, max_len, min_len, max_sent , min_sent)
+    paragraphs = filter(paragraphs, max_len, min_len, max_sent, min_sent)
 
     ret = []
     for tuple in paragraphs:
@@ -67,7 +77,9 @@ def get_paragraph_words(max_len=512 , min_len=10 , max_sent=60 , min_sent=3 , pa
     return ret
 
 
-def make_transposition_pair_dataset (paragraphs , num_tokens=None , validation_split=0.1):
+def make_transposition_pair_dataset(paragraphs,
+                                    num_tokens=None,
+                                    validation_split=0.1):
     """
     desc: makes dataset of paragraphs in which each example is a list of :
             [label, first paragraph ID, second paragraph ID, first paragraph text, second paragraph text]
@@ -97,29 +109,40 @@ def make_transposition_pair_dataset (paragraphs , num_tokens=None , validation_s
     # paragraph IDs could also be their IDs in gutenberg API
 
     for i, (x, y) in enumerate(paragraphs):
-        if (num_tokens!=None):
-            all_pairs.append(["1", str(i), str(i + num),
-                              " ".join(x[max(0, len(x) - num_tokens):len(x)]), " ".join(y[:min(len(y), num_tokens)])])
+        if (num_tokens != None):
+            all_pairs.append([
+                "1",
+                str(i),
+                str(i + num), " ".join(x[max(0,
+                                             len(x) - num_tokens):len(x)]),
+                " ".join(y[:min(len(y), num_tokens)])
+            ])
 
-            all_pairs.append(["0", str(num + i), str(i),
-                              " ".join(y[max(0, len(y) - num_tokens):len(y)]), " ".join(x[:min(len(x), num_tokens)])])
+            all_pairs.append([
+                "0",
+                str(num + i),
+                str(i), " ".join(y[max(0,
+                                       len(y) - num_tokens):len(y)]),
+                " ".join(x[:min(len(x), num_tokens)])
+            ])
         else:
-            all_pairs.append(["1", str(i), str(i + num), " ".join(x), " ".join(y)])
-            all_pairs.append(["0", str(num + i), str(i), " ".join(y), " ".join(x)])
-
+            all_pairs.append(
+                ["1", str(i),
+                 str(i + num), " ".join(x), " ".join(y)])
+            all_pairs.append(
+                ["0", str(num + i),
+                 str(i), " ".join(y), " ".join(x)])
 
     shuffle(all_pairs)
 
-    train_data = all_pairs[:int(len(all_pairs)*(1-validation_split))]
-    validation_data = all_pairs[int(len(all_pairs)*(1-validation_split)):]
+    train_data = all_pairs[:int(len(all_pairs) * (1 - validation_split))]
+    validation_data = all_pairs[int(len(all_pairs) * (1 - validation_split)):]
 
     return train_data, validation_data
 
 
-def write_tsv (data, data_path):
-    with open(data_path, 'w', newline='' , encoding='utf-8') as tsvfile:
+def write_tsv(data, data_path):
+    with open(data_path, 'w', newline='', encoding='utf-8') as tsvfile:
         writer = csv.writer(tsvfile, delimiter='\t')
         for example in data:
             writer.writerow(example)
-
-
